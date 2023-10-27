@@ -7,7 +7,7 @@ This script is designed to monitor the memory consumption of a system and genera
 
 1. Clone the repository:
 ```
-git clone <repo url>
+git clone git@github.com:AntonSivashka/Memory-control-script-task.git
 ```
 
 2. Install the required dependencies:
