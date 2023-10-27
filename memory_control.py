@@ -19,7 +19,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def get_memory_usage():
+def get_memory_usage() -> float:
     """
     Retrieves the memory usage of the system.
 
@@ -38,7 +38,7 @@ def get_memory_usage():
         return usage_percentage
 
 
-def send_request(used_memory: int, url: str):
+def send_request(used_memory: int, url: str) -> int | None:
     """
     Sends an HTTP POST request to a specified URL with information about 
     the used memory.
@@ -49,10 +49,12 @@ def send_request(used_memory: int, url: str):
     
     :param used_memory: (int) Represent used memory percentage of system.
     :param url: (str) Specify alarm http request to api.
+    :return: (int or None) Return status code of http response or nothing.
     """
+    used_memory = "{:.2f}".format(used_memory)
     request_message = {
-        "memory_usage": "{:.2f}".format(used_memory),
-        "message": f"",
+        "memory_usage": used_memory,
+        "message": f"Memory is {used_memory}% full.",
     }
     timeout = 5
     
@@ -73,7 +75,10 @@ def send_request(used_memory: int, url: str):
         
     except Exception as err:
         logger.error("Exception: %s.", err)
-        
+    
+    else:
+        return response.status_code
+    return
 
 
 @click.command()
@@ -88,7 +93,7 @@ def send_request(used_memory: int, url: str):
     "-r", 
     "--request-url", 
     type=str, 
-    default="http://localhost:8000", 
+    default="   ", 
     help="URL of http request to api"
     )
 def check(memory_usage: int, request_url: str):
@@ -97,7 +102,8 @@ def check(memory_usage: int, request_url: str):
     memory usage exceeds a certain threshold.
     """
     while True:
-        if get_memory_usage() >= memory_usage:
+        current_memory = get_memory_usage()
+        if current_memory >= memory_usage:
             send_request(get_memory_usage(), request_url)
             sleep(1)
             

@@ -23,7 +23,7 @@ chmod +x ./memory_control.py
 
 ## Usage
 
-To run the script with default parameters (80% of memory and http://localhost:8000), use the following command:
+To run the script with default parameters (80% of memory and http://127.0.0.1:5000/alarm), use the following command:
 ```
 python3 ./memory_control.py
 ```
