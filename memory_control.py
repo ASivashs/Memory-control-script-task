@@ -98,7 +98,7 @@ def send_request(used_memory: int, url: str) -> int | None:
     )
 def check(memory_usage: int, request_url: str):
     """
-    Monitor system memory consumption and generate an alarm when 
+    Monitor system memory consumption every second and generate an alarm when 
     memory usage exceeds a certain threshold.
     """
     while True:
