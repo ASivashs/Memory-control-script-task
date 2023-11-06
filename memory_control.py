@@ -93,7 +93,7 @@ def send_request(used_memory: int, url: str) -> int | None:
     "-r", 
     "--request-url", 
     type=str, 
-    default="   ", 
+    default="http://127.0.0.1:5000/alarm", 
     help="URL of http request to api"
     )
 def check(memory_usage: int, request_url: str):
