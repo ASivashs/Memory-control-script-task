@@ -29,7 +29,7 @@ def get_memory_usage() -> dict:
     if platform.startswith("linux"):
         total, used, free, shared, cache, available = \
             check_output(["free", "-m"]).decode("utf-8").split('\n')[1].split()[1:7]
-        usage_percentage = int(used) / int(total) * 100
+        usage_percentage = round((int(used) / int(total) * 100), 2)
         response = {
             "total": total,
             "used": used,
