@@ -19,49 +19,42 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def get_memory_usage() -> float:
+def get_memory_usage() -> dict:
     """
     Retrieves the memory usage of the system.
 
-    This function determines the memory usage of the system by executing a 
-    platform-specific command 'free -m' to obtain information about the total 
-    and used memory. It specifically targets Linux systems. The function 
-    calculates the usage percentage by dividing the used memory by the total 
-    memory and multiplying by 100.
-
-    :return: (float) The memory usage percentage of the system.
+    :return: (dict) The memory usage information with percentage of the system used memory.
     """
     if platform.startswith("linux"):
-        total_memory, used_memory = \
-            check_output(["free", "-m"]).decode("utf-8").split('\n')[1].split()[1:3]
-        usage_percentage = int(used_memory) / int(total_memory) * 100
-        return usage_percentage
+        total, used, free, shared, cache, available = \
+            check_output(["free", "-m"]).decode("utf-8").split('\n')[1].split()[1:7]
+        usage_percentage = int(used) / int(total) * 100
+        response = {
+            "total": total,
+            "used": used,
+            "used_percentage": usage_percentage,
+            "free": free,
+            "shared": shared,
+            "cache": cache,
+        }
+        return response
 
 
-def send_request(used_memory: int, url: str) -> int | None:
+def send_request(message: dict, url: str) -> int | None:
     """
     Sends an HTTP POST request to a specified URL with information about 
-    the used memory.
+    the memory usage.
     
-    This function constructs a request message that includes the used memory 
-    value and an optional message. It then attempts to send the request using 
-    the `requests.post()` method. The request is sent with a timeout of 5 seconds.
-    
-    :param used_memory: (int) Represent used memory percentage of system.
+    :param message: (dict) Request message.
     :param url: (str) Specify alarm http request to api.
-    :return: (int or None) Return status code of http response or nothing.
+    :return: (int or None) Return status code of http response or nothing if success.
     """
-    used_memory = "{:.2f}".format(used_memory)
-    request_message = {
-        "memory_usage": used_memory,
-        "message": f"Memory is {used_memory}% full.",
-    }
     timeout = 5
     
     try:
-        response = requests.post(url, timeout=timeout, json=request_message)
+        response = requests.post(url, timeout=timeout, json=message)
         response.raise_for_status()
-        logger.info("Request sent successfully. %s", request_message)
+        logger.info("Request sent successfully. %s", message)
         
     except requests.Timeout as err:
         logger.error("Timeout: %s.", err)
@@ -93,7 +86,7 @@ def send_request(used_memory: int, url: str) -> int | None:
     "-r", 
     "--request-url", 
     type=str, 
-    default="http://127.0.0.1:5000/alarm", 
+    default="http://127.0.0.1:8080/alarm", 
     help="URL of http request to api"
     )
 def check(memory_usage: int, request_url: str):
@@ -102,9 +95,10 @@ def check(memory_usage: int, request_url: str):
     memory usage exceeds a certain threshold.
     """
     while True:
-        current_memory = get_memory_usage()
-        if current_memory >= memory_usage:
-            send_request(get_memory_usage(), request_url)
+        current_memory_info = get_memory_usage()
+        current_memory_usage = current_memory_info["used_percentage"]
+        if current_memory_usage >= memory_usage:
+            send_request(current_memory_info, request_url)
             sleep(1)
             
 
