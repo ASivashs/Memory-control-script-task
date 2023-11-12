@@ -23,7 +23,8 @@ def get_memory_usage() -> dict:
     """
     Retrieves the memory usage of the system.
 
-    :return: (dict) The memory usage information with percentage of the system used memory.
+    :return: (dict) The memory usage information with percentage of 
+    the system used memory.
     """
     if platform.startswith("linux"):
         total, used, free, shared, cache, available = \
@@ -47,7 +48,8 @@ def send_request(message: dict, url: str) -> int | None:
     
     :param message: (dict) Request message.
     :param url: (str) Specify alarm http request to api.
-    :return: (int or None) Return status code of http response or nothing if success.
+    :return: (int or None) Return status code of http response or 
+    nothing if success.
     """
     timeout = 5
     
@@ -91,8 +93,8 @@ def send_request(message: dict, url: str) -> int | None:
     )
 def check(memory_usage: int, request_url: str):
     """
-    Monitor system memory consumption every second and generate an alarm when 
-    memory usage exceeds a certain threshold.
+    Monitor system memory consumption every second and generate HTTP POST
+    request to specific api when memory usage exceeds a certain threshold.
     """
     while True:
         current_memory_info = get_memory_usage()
