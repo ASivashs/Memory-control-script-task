@@ -1,14 +1,11 @@
 #!/bin/bash
 
 
-used_limit=80
+usage_limit=80
 url="http://127.0.0.1:8080/alarm"
 
 if [[ "$1" =~ ^[0-9]+$ && $1 -le 100 ]]; then
-    used_limit=$1
-else
-    echo "Incorrect memory limit type. Please specify integer value."
-    exit 0
+    usage_limit=$1
 fi
 
 if [[ -n $2 ]]; then
@@ -30,11 +27,11 @@ used_perentage=$(printf '%.*f\n' 0 $used_perentage)
 if [[ $usage_limit -le $used_perentage ]]; then
     echo "Memory usage is: $used_perentage"
 
-    message="{\"total\": \"$total\", 
-        \"used\": \"$used\", 
-        \"used_percentage\": \"$usage_percentage\", 
-        \"free\": \"$free\", 
-        \"shared\": \"$shared\", 
+    message="{\"total\": \"$total\", \
+        \"used\": \"$used\", \
+        \"used_percentage\": \"$usage_percentage\", \
+        \"free\": \"$free\", \
+        \"shared\": \"$shared\", \
         \"cache\": \"$cache\"}"
 
     curl -H "Content-Type: application/json" \
