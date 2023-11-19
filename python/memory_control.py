@@ -88,7 +88,7 @@ def send_request(message: dict, url: str) -> int | None:
     "-r", 
     "--request-url", 
     type=str, 
-    default="http://127.0.0.1:8080/alarm", 
+    default="http://127.0.0.1:8080/reports/", 
     help="URL of http request to api"
     )
 def check(memory_usage: int, request_url: str):
